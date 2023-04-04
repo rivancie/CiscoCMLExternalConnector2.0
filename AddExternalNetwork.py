@@ -69,7 +69,7 @@ def addManagement():
             response12 = requests.patch(full_url2, headers=headers, data=json.dumps(cloud_payload2), verify=False)
 
         else:
-            print(f"Error: Unable to add device to NSO. Status code: {response1.status_code}")
+            print(f"Error: Unable to add device to CML. Status code: {response1.status_code}")
 
         #This section adds the mgmt switch and updates the config
         response2 = requests.post(full_url, headers=headers, data=json.dumps(switch_payload), verify=False)
@@ -92,7 +92,7 @@ def addManagement():
                 V.global_node_config = temp_config
                 UpdateNodeConfig.update_node_config(V.global_token, V.global_CML_URL)
         else:
-            print(f"Error: Unable to add device to NSO. Status code: {response2.status_code}")
+            print(f"Error: Unable to add device to CML. Status code: {response2.status_code}")
 
         #Create Interfaces on Mgmt Switch
         V.global_add_int_info['node'] = V.global_mgmtswitch_node['id']
