@@ -3,7 +3,7 @@
 #
 import json
 import requests
-
+import sys
 
 def get_token(url, user, password):
 	api_call = "/v0/authenticate"
@@ -19,13 +19,7 @@ def get_token(url, user, password):
 		"password": password
 	}
 
+
 	response = requests.request("POST", url, headers=headers, data=json.dumps(payload), verify=False).json()
-
-	if response.status_code == 200:
-		print("CML Credentials accepted and working")
-
-	else:
-		print(f"Error: Unable to connect to CML Server. Status code: {response.status_code}")
-		sys.exit("Program Halted")
-
+	print(response)
 	return response
