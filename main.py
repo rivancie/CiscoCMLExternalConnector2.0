@@ -22,8 +22,6 @@ import GlobalVar
 
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
-
-
 labname = "CML Lab " + CMLinfo.CML["host"]
 
 if __name__ == "__main__":
