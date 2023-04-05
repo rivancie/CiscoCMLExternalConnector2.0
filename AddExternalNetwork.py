@@ -145,20 +145,20 @@ def addManagement():
     root.title("Adding Management Switch and Connections")
     root.geometry("300x300")
 
-    label1 = Label(root, text="External Bridge Name for the Cloud")
+    label1 = Label(root, text="Step1. External Bridge Name for the Cloud")
     label1.pack(side=TOP)
     enter1 = Entry(root, width=20)
     enter1.pack(side=TOP)
     enter1.insert(0, V.global_bridge)
 
-    label2 = Label(root, text="VLAN ID if required - default is 1")
+    label2 = Label(root, text="Step2. VLAN ID if required - default is 1")
     label2.pack(side=TOP)
     enter2 = Entry(root, width=20)
     enter2.pack(side=TOP)
     enter2.insert(0, V.global_vlanID)
 
     # NED drop-down
-    label4 = Label(root, text="Set Bridge out as trunk or access")
+    label4 = Label(root, text="Step3. Set Bridge out as trunk or access")
     label4.pack(side=TOP)
 
     clicked1 = StringVar(root)
@@ -168,8 +168,14 @@ def addManagement():
     drop1 = OptionMenu(root, clicked1, *V.global_list_connection)
     drop1.pack(side=TOP)
 
-    myButton1 = Button(root, text="Stop Lab and Add Mgmt", command=confirmClick)
+    label5 = Label(root, text="Confirm will Stop Lab and add mgmt objects")
+    label5.pack(side=TOP)
+
+    myButton1 = Button(root, text="Confirm", command=confirmClick)
     myButton1.pack(side=TOP)
+
+    label6 = Label(root, text="Halts the program")
+    label6.pack(side=TOP)
 
     myButton2 = Button(root, text="Quit", command=quitClick)
     myButton2.pack(side=TOP)
