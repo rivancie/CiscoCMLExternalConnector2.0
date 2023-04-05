@@ -12,11 +12,10 @@ import GlobalVar
 import sys
 from tkinter import *
 import tkinter.font as font
-
+import StopBox
 import UpdateTheLab
 
 g = GlobalVar
-
 
 # Beginning of tKinter user pop up box
 def input_box():
@@ -190,23 +189,5 @@ def get_user_input(token, url, CML_USER, CML_PASS):
     full_url = url + api_call
     response = requests.get(full_url, headers=headers, verify=False).json()
     GlobalVar.global_node_count = str(response['node_count'])
-
-    # This section checks if the lab status is on, then asks the user if they want this program to stop it
-    api_call = "/v0/labs/" + GlobalVar.global_labid + "/state"
-    full_url = url + api_call
-    response = requests.get(full_url, headers=headers, verify=False).json()
-    if response == "STARTED":
-        stop_box()
-
-        if (g.global_on_off == "Y") or (g.global_on_off == "y"):
-            api_call = "/v0/labs/" + GlobalVar.global_labid + "/stop"
-            full_url = url + api_call
-            response = requests.put(full_url, headers=headers, verify=False)
-            time.sleep(3)
-        else:
-            sys.exit("Program Stopped")
-
-    api_call = "/v0/labs/" + GlobalVar.global_labid + "/wipe"
-    wipe_url = url + api_call
-    response_wipe = requests.put(wipe_url, headers=headers, verify=False)
+    StopBox.check_started()
     UpdateTheLab.startLoop()

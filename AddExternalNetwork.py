@@ -1,12 +1,16 @@
 # This module provides a popup for additional user input. 2 new devices will be added to the running lab.
 # The external cloud connector object and the management switch.  This also adds the management links to
 # all devices in the lab.
+import tkinter
 import GlobalVar
 import requests
 import json
 from tkinter import *
+import tkinter.font as font
 import ast
 import UpdateNodeConfig
+import StopBox
+import time
 
 V = GlobalVar
 
@@ -15,9 +19,11 @@ def remove_end_line(in_string):
     in_string = "\n".join(split_it[:-1])
     return in_string
 
+
 def addManagement():
 
     def confirmClick():
+        print("made it past")
         V.global_mgmt_type = clicked1.get()
         V.global_vlanID = enter2.get()
         V.global_bridge = enter1.get()
@@ -28,6 +34,8 @@ def addManagement():
             'accept': 'application/json',
             'Authorization': token
         }
+
+        # This section prepares the management portion
         api_call = "/v0/labs/" + GlobalVar.global_labid
         full_url = V.global_CML_URL + api_call
         response = requests.get(full_url, headers=headers, verify=False).json()

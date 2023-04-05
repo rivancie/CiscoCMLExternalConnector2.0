@@ -25,6 +25,10 @@ global_list_connection = ["trunk", "access"]
 global_mgmt_type = ("access")
 global_CML_URL = ("null")
 global_token = ("null")
+global_headers = {
+        'accept': 'application/json',
+        'Authorization': global_token
+    }
 global_cloud_node = {
     'id': 'empty',
     'interfaces': []
