@@ -137,36 +137,6 @@ def input_box():
 
     tkinter.mainloop()
 
-# Beginning of tKinter pop up box for YES NO stopping the lab
-def stop_box():
-
-    def stop_lab():
-        g.global_on_off = "Y"
-        root.destroy()
-
-    def nostop_lab():
-        g.global_on_off = "N"
-        root.destroy()
-
-    root = Tk()
-    root.title("Running lab detected!")
-    root.geometry("300x100")
-    message = "Running lab has been detected, do you want me to shut this lab down?"
-    text_box = Text(root, height=2, width=70)
-    text_box.pack(expand=TRUE)
-    text_box.insert(END, message)
-
-    button_font = font.Font(size=10, weight="bold")
-    myButton1 = Button(root, text="YES", command=stop_lab)
-    myButton1['font'] = button_font
-    myButton1.pack()
-
-    myButton2 = Button(root, text="NO", command=nostop_lab)
-    myButton2['font'] = button_font
-    myButton2.pack()
-
-    tkinter.mainloop()
-
 def get_user_input(token, url, CML_USER, CML_PASS):
     input_box()
 

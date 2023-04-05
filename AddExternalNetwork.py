@@ -6,6 +6,7 @@ import GlobalVar
 import requests
 import json
 from tkinter import *
+import sys
 import tkinter.font as font
 import ast
 import UpdateNodeConfig
@@ -19,11 +20,14 @@ def remove_end_line(in_string):
     in_string = "\n".join(split_it[:-1])
     return in_string
 
-
 def addManagement():
 
+    def quitClick():
+        sys.exit("Program Stopped")
+
     def confirmClick():
-        print("made it past")
+        StopBox.stop_lab()
+        StopBox.wipe_lab()
         V.global_mgmt_type = clicked1.get()
         V.global_vlanID = enter2.get()
         V.global_bridge = enter1.get()
@@ -164,7 +168,10 @@ def addManagement():
     drop1 = OptionMenu(root, clicked1, *V.global_list_connection)
     drop1.pack(side=TOP)
 
-    myButton1 = Button(root, text="Confirm", command=confirmClick)
+    myButton1 = Button(root, text="Stop Lab and Add Mgmt", command=confirmClick)
     myButton1.pack(side=TOP)
+
+    myButton2 = Button(root, text="Quit", command=quitClick)
+    myButton2.pack(side=TOP)
 
     root.mainloop()

@@ -39,6 +39,27 @@ def stop_box():
 
     tkinter.mainloop()
 
+def stop_lab():
+    api_call = "/v0/labs/" + V.global_labid + "/stop"
+    full_url = V.global_CML_URL + api_call
+    token = 'Bearer' + ' ' + V.global_token
+    headers = {
+        'accept': 'application/json',
+        'Authorization': token
+    }
+    response = requests.put(full_url, headers=headers, verify=False)
+    time.sleep(3)
+
+def wipe_lab():
+    api_call = "/v0/labs/" + GlobalVar.global_labid + "/wipe"
+    wipe_url = V.global_CML_URL + api_call
+    token = 'Bearer' + ' ' + V.global_token
+    headers = {
+        'accept': 'application/json',
+        'Authorization': token
+    }
+    response_wipe = requests.put(wipe_url, headers=headers, verify=False)
+
 def check_started():
 
     # This section checks if the lab status is on, then asks the user if they want this program to stop it
@@ -54,13 +75,8 @@ def check_started():
     if response == "STARTED":
         stop_box()
         if (V.global_on_off == "Y") or (V.global_on_off == "y"):
-            api_call = "/v0/labs/" + V.global_labid + "/stop"
-            full_url = url + api_call
-            response = requests.put(full_url, headers=headers, verify=False)
-            time.sleep(3)
+            stop_lab()
         else:
             sys.exit("Program Stopped")
 
-    api_call = "/v0/labs/" + GlobalVar.global_labid + "/wipe"
-    wipe_url = url + api_call
-    response_wipe = requests.put(wipe_url, headers=headers, verify=False)
+    wipe_lab()
