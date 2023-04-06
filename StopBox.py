@@ -12,7 +12,7 @@ V = GlobalVar
 # Beginning of tKinter pop up box for YES NO stopping the lab
 def stop_box():
 
-    def stop_lab():
+    def yesstop_lab():
         V.global_on_off = "Y"
         root2.destroy()
 
@@ -29,7 +29,7 @@ def stop_box():
     text_box.insert(END, message)
 
     button_font = font.Font(size=10, weight="bold")
-    myButton1 = Button(root2, text="YES", command=stop_lab)
+    myButton1 = Button(root2, text="YES", command=yesstop_lab)
     myButton1['font'] = button_font
     myButton1.pack()
 
