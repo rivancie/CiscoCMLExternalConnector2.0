@@ -4,6 +4,7 @@
 global_labid = ("TEST")
 global_lab_list = []
 global_lab_id_list = []
+global_nodeID_list = []
 global_title = ("test")
 global_nodeid = ("test")
 global_uservrfname = ("mgmt")
@@ -21,10 +22,17 @@ global_on_off = ("test")
 global_secureCRT = ("session_name,hostname,protocol,username,folder,emulation\n")
 global_bridge = ("bridge0")
 global_vlanID = ("1")
+global_mgmt_node_num = ("1")
 global_list_connection = ["trunk", "access"]
 global_mgmt_type = ("access")
 global_CML_URL = ("null")
 global_token = ("null")
+global_mgmt_node_def = ("nxosv9000")
+global_addExternal = False
+global_addConfig = False
+global_valid = True
+global_old = False
+global_version = ""
 global_headers = {
         'accept': 'application/json',
         'Authorization': global_token
@@ -35,7 +43,8 @@ global_cloud_node = {
 }
 global_mgmtswitch_node = {
     'id': 'empty',
-    'interfaces': []
+    'interfaces': [],
+    'node_definition': 'nxosv9000'
 }
 global_add_int_info = {"node": "test",
                        "slot": 0

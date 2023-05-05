@@ -14,19 +14,33 @@ from tkinter import *
 import tkinter.font as font
 import StopBox
 import UpdateTheLab
-
+import re
+import AddExternalConfigs
 g = GlobalVar
+
+
+# Make a regular expression
+# for validating an Ip-address
+regex = '''^(25[0-5]|2[0-4][0-9]|[0-1]?[0-9][0-9]?)\.( 
+            25[0-5]|2[0-4][0-9]|[0-1]?[0-9][0-9]?)\.( 
+            25[0-5]|2[0-4][0-9]|[0-1]?[0-9][0-9]?)\.( 
+            25[0-5]|2[0-4][0-9]|[0-1]?[0-9][0-9]?)'''
+
+# Define a function for
+# validate an Ip addess
+def check(Ip):
+
+    # pass the regular expression
+    # and the string in search() method
+    if(re.search(regex, Ip)):
+        g.global_valid = True
+    else:
+        g.global_valid = False
 
 # Beginning of tKinter user pop up box
 def input_box():
     def myClick():
-        # This function gets the user input items and stores them in the global vars and prints results to the user
-        g.global_userstartaddress = enter1.get()
-        g.global_usersm = enter2.get()
-        temp_it = clicked.get()
-        g.global_labid = temp_it[-6:]
-        g.global_usergtwyaddress = enter3.get()
-        g.global_uservrfname = enter4.get()
+        # This function verifies the user input items and  prints results in the gui
         myLabel = Label(root, text="This is the starting point: " + g.global_userstartaddress)
         myLabel.pack()
         myLabel = Label(root, text="This is the SM: " + g.global_usersm)
@@ -40,18 +54,22 @@ def input_box():
 
     def doneClick():
         # This saves and closes the pop up box
-        g.global_userstartaddress = enter1.get()
-        g.global_usersm = enter2.get()
         temp_it = clicked.get()
-        g.global_labid = temp_it[-6:]
-        g.global_usergtwyaddress = enter3.get()
-        g.global_uservrfname = enter4.get()
+        temper = temp_it.split("ID:", 1)
+        g.global_labid = temper[1]
         root.destroy()
 
-    def checkedBox():
+    def checkedBox1():
         temp_it = clicked.get()
-        g.global_labid = temp_it[-6:]
-        AddExternalNetwork.addManagement()
+        temper = temp_it.split("ID:", 1)
+        g.global_labid = temper[1]
+        g.global_addExternal = not g.global_addExternal
+
+    def checkedBox2():
+        temp_it = clicked.get()
+        temper = temp_it.split("ID:", 1)
+        g.global_labid = temper[1]
+        g.global_addConfig = True
 
     def quitButton():
         sys.exit("Program Stopped")
@@ -92,23 +110,6 @@ def input_box():
     text_box.pack(expand=TRUE)
     text_box.insert(END, message)
 
-    # These are the user input boxes
-    enter1 = Entry(root, width=50)
-    enter1.pack()
-    enter1.insert(0, "Starting IP Address goes here")
-
-    enter2 = Entry(root, width=50)
-    enter2.pack()
-    enter2.insert(0, "Enter Subnet Mask here")
-
-    enter3 = Entry(root, width=50)
-    enter3.pack()
-    enter3.insert(0, "Enter in the GTWY IP Address")
-
-    enter4 = Entry(root, width=50)
-    enter4.pack()
-    enter4.insert(0, "Enter management VRF name")
-
     # initial menu text for drop down
     clicked = StringVar()
     clicked.set("Select Lab Here")
@@ -118,8 +119,13 @@ def input_box():
     drop.pack()
 
     checkvar1 = tkinter.IntVar
-    checkBox1 = tkinter.Checkbutton(root, text="Add Mgmt switch and Connections * Please select the correct lab above", variable=checkvar1, onvalue=1, offvalue=0, command=checkedBox)
+    checkBox1 = tkinter.Checkbutton(root, text="Optional - Add Mgmt switch and Connections to the lab selected above", variable=checkvar1, onvalue=1, offvalue=0, command=checkedBox1)
     checkBox1.pack()
+
+    checkvar2 = tkinter.IntVar
+    checkBox2 = tkinter.Checkbutton(root, text="Optional - Add Mgmt Configurations to the lab selected above", variable=checkvar2, onvalue=1, offvalue=0, command=checkedBox2)
+    checkBox2.pack()
+
 
     button_font = font.Font(size=10, weight="bold")
     myButton1 = Button(root, text="Confirm Changes", command=myClick)
@@ -159,5 +165,33 @@ def get_user_input(token, url, CML_USER, CML_PASS):
     full_url = url + api_call
     response = requests.get(full_url, headers=headers, verify=False).json()
     GlobalVar.global_node_count = str(response['node_count'])
+
+    #This section gets the NodeIDs and stores them as a list
+    node_url = url + api_call + "/nodes"
+    response2 = requests.get(node_url, headers=headers, verify=False).json()
+    GlobalVar.global_nodeID_list = response2
+
+    #This checks the CML version running and sets the var for old or new
+    version_url = url + "/v0/system_information"
+    response3 = requests.get(version_url, headers=headers, verify=False).json()
+    GlobalVar.global_version = response3['version']
+    if "2.2" in GlobalVar.global_version or "2.3" in GlobalVar.global_version:
+        GlobalVar.global_old = True
+        GlobalVar.global_mgmtswitch_node['node_definition'] = "nxosv"
+        GlobalVar.global_mgmt_node_num = "2"
+        print("OLD version")
+    elif "2.4" in GlobalVar.global_version or "2.5" in GlobalVar.global_version:
+        GlobalVar.global_old = False
+        GlobalVar.global_mgmtswitch_node['node_definition'] = "nxosv9000"
+        GlobalVar.global_mgmt_node_num = "1"
+        print("NEW version")
+
+    #This checks to see if the lab is running and asks the user if they want to stop the lab
     StopBox.check_started()
-    UpdateTheLab.startLoop()
+
+    #This section runs the functions if the check boxes were checked by the user
+    if g.global_addExternal:
+        AddExternalNetwork.addManagement()
+    if g.global_addConfig:
+        AddExternalConfigs.addConfigs()
+        UpdateTheLab.startLoop()

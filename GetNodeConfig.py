@@ -3,6 +3,7 @@
 #               and grabs the corresponding template, updates the template with VARs.
 import requests
 import GlobalVar
+import sys
 
 GV = GlobalVar
 
@@ -33,8 +34,10 @@ def get_node_config(token, url):
 
     if response.status_code == 200:
         node_info = requests.get(full_url, headers=headers, verify=False).json()
-        node_type = node_info['data']['image_definition']
-        GlobalVar.global_node_hostname = node_info['data']['label']
+        if "data" in node_info:
+            node_info = node_info['data']
+        node_type = node_info['node_definition']
+        GlobalVar.global_node_hostname = node_info['label']
     else:
         node_type = "SKIP"
 
@@ -47,7 +50,7 @@ def get_node_config(token, url):
         GlobalVar.global_node_type = "SKIP"
         node_type = "SKIP"
     node_type = str(node_type)
-    print(node_type)
+
     # The following if statements look for various device types and starts to build the updated config
     env_dict = {'ip_addr': GlobalVar.global_node_address,
                 'def_gtwy': GV.global_usergtwyaddress,
@@ -56,53 +59,56 @@ def get_node_config(token, url):
                 'host_name': GV.global_node_hostname,
                 'mac_var': GV.global_node_mac
                 }
-    if "iosxrv-" in node_type:
+    if "iosxrv9" in node_type:
+        GlobalVar.global_node_type = "XR"
+        with open('asr9ktemp.cfg') as file:
+            config = file.read()
+            node_info['configuration'] = remove_end_line(str(node_info['configuration']))
+            temp_config = config.format(**env_dict)
+            GV.global_node_config = node_info['configuration'] + temp_config
+    elif "iosxrv" in node_type:
         GlobalVar.global_node_type = "XR"
         with open('xrtemp.cfg') as file:
             config = file.read()
-            config = remove_end_line(config)
             temp_config = config.format(**env_dict)
-            GV.global_node_config = node_info['data']['configuration'] + temp_config
+            GV.global_node_config = node_info['configuration'] + temp_config
     elif "iosxrv9" in node_type:
         GlobalVar.global_node_type = "XR"
         with open('asr9ktemp.cfg') as file:
             config = file.read()
-            config = remove_end_line(config)
+            node_info['configuration'] = remove_end_line(str(node_info['configuration']))
             temp_config = config.format(**env_dict)
-            GV.global_node_config = node_info['data']['configuration'] + temp_config
+            GV.global_node_config = node_info['configuration'] + temp_config
     elif "iosvl2" in node_type:
         GlobalVar.global_node_type = "XE"
         with open('xel2temp.cfg') as file:
             config = file.read()
-            config = remove_end_line(config)
             temp_config = config.format(**env_dict)
-            GV.global_node_config = node_info['data']['configuration'] + temp_config
+            GV.global_node_config = node_info['configuration'] + temp_config
     elif "iosv" in node_type:
         GlobalVar.global_node_type = "XE"
         with open('xetemp.cfg') as file:
             config = file.read()
-            config = remove_end_line(config)
             temp_config = config.format(**env_dict)
-            GV.global_node_config = node_info['data']['configuration'] + temp_config
+            GV.global_node_config = node_info['configuration'] + temp_config
     elif "csr" in node_type:
         GlobalVar.global_node_type = "XE"
         with open('csrtemp.cfg') as file:
             config = file.read()
-            config = remove_end_line(config)
             temp_config = config.format(**env_dict)
-            GV.global_node_config = node_info['data']['configuration'] + temp_config
-    elif "nxosv-" in node_type:
-        GlobalVar.global_node_type = "NXOS"
-        with open('nxtemp.cfg') as file:
-            config = file.read()
-            temp_config = config.format(**env_dict)
-            GV.global_node_config = node_info['data']['configuration'] + temp_config
+            GV.global_node_config = node_info['configuration'] + temp_config
     elif "nxosv9" in node_type:
         GlobalVar.global_node_type = "NXOS"
         with open('nx9500temp.cfg') as file:
             config = file.read()
             temp_config = config.format(**env_dict)
-            GV.global_node_config = node_info['data']['configuration'] + temp_config
+            GV.global_node_config = node_info['configuration'] + temp_config
+    elif "nxosv" in node_type:
+        GlobalVar.global_node_type = "NXOS"
+        with open('nxtemp.cfg') as file:
+            config = file.read()
+            temp_config = config.format(**env_dict)
+            GV.global_node_config = node_info['configuration'] + temp_config
     else:
         GlobalVar.global_node_type = "SKIP"
 

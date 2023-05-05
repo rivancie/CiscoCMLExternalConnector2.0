@@ -16,6 +16,7 @@ def stop_box():
         V.global_on_off = "Y"
         root2.destroy()
 
+
     def nostop_lab():
         V.global_on_off = "N"
         root2.destroy()
@@ -74,6 +75,7 @@ def check_started():
     response = requests.get(full_url, headers=headers, verify=False).json()
     if response == "STARTED":
         stop_box()
+        print("here 2")
         if (V.global_on_off == "Y") or (V.global_on_off == "y"):
             stop_lab()
         else:

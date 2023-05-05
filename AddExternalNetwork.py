@@ -26,8 +26,6 @@ def addManagement():
         sys.exit("Program Stopped")
 
     def confirmClick():
-        StopBox.stop_lab()
-        StopBox.wipe_lab()
         V.global_mgmt_type = clicked1.get()
         V.global_vlanID = enter2.get()
         V.global_bridge = enter1.get()
@@ -48,7 +46,7 @@ def addManagement():
         # Add the Management Switch and external Cloud objects
         switch_payload = {
                             "label": "ExtSwitch",
-                            "node_definition": "nxosv",
+                            "node_definition": V.global_mgmtswitch_node['node_definition'],
                             "x": 0,
                             "y": 0,
                         }
@@ -94,7 +92,8 @@ def addManagement():
             response21 = requests.patch(full_url3, headers=headers, data=json.dumps(switch_payload2), verify=False)
 
             env_dict = {'mgmt_vlan': V.global_vlanID,
-                        'mgmt_mode': V.global_mgmt_type
+                        'mgmt_mode': V.global_mgmt_type,
+                        'mgmt_node_num': V.global_mgmt_node_num
                         }
             with open('nxos_mgmt_template.cfg') as file:
                 config = file.read()
@@ -128,7 +127,7 @@ def addManagement():
         #Create links to all devices
         for counter1 in range(int(GlobalVar.global_node_count)):
             #Ensures the 8th port of the device is created
-            V.global_add_int_info['node'] = ("n" + str(counter1))
+            V.global_add_int_info['node'] = V.global_nodeID_list[counter1]
             V.global_add_int_info['slot'] = 8
             response5 = requests.post(addint_url, headers=headers, data=json.dumps(V.global_add_int_info), verify=False)
             V.global_add_int_info['interfaces'] = json.loads(response5.content)
@@ -137,8 +136,10 @@ def addManagement():
             V.global_linkem['src_int'] = V.global_add_int_info['interfaces'][8]['id']
             V.global_linkem['dst_int'] = V.global_mgmtswitch_node['interfaces'][counter1+1]['id']
             response51 = requests.post(addlink_url, headers=headers, data=json.dumps(V.global_linkem), verify=False)
+            V.global_add_int_info = {"node": "test",
+                                     "slot": 0
+                                     }
         print(f"{counter1+1} Mgmt connections made successfully")
-
         root.destroy()
 
     root = Tk()
