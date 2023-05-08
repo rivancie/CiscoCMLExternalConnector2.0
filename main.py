@@ -32,11 +32,6 @@ if __name__ == "__main__":
     CML_PASS = CMLinfo.CML["password"]
     auth_token = GetToken.get_token(CML_URL, CML_USER, CML_PASS)
     GlobalVar.global_token = auth_token
-    print("#" * 113)
     labids = GetLabs.get_labs(auth_token, CML_URL, labname)
-    print("#" * 113)
     GetLabsDetail.get_labsdetail(auth_token, CML_URL, labids)
-    print("#" * 113)
     GetUserInput.get_user_input(auth_token, CML_URL, CML_USER, CML_PASS)
-    print("#" * 113)
-

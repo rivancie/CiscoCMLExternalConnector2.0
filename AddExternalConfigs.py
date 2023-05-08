@@ -1,34 +1,31 @@
 # This module provides a popup for additional user input. This will prompt the user for the seed address,
 # default gtwy, and management vrf to be added to the devices.
+import ipaddress
 import tkinter
 import GlobalVar
-import requests
-import json
 from tkinter import *
 import sys
-import tkinter.font as font
-import ast
-import UpdateNodeConfig
-import StopBox
-import time
+import re
 
 V = GlobalVar
 
-def remove_end_line(in_string):
-    split_it = in_string.split("\n")
-    in_string = "\n".join(split_it[:-1])
-    return in_string
 
 def addConfigs():
-
     def quitClick():
         sys.exit("Program Stopped")
 
     def confirmClick():
         # This saves and closes the pop up box
+
         V.global_userstartaddress = enter1.get()
+        ipaddress.IPv4Address(V.global_userstartaddress)
+
         V.global_usersm = enter2.get()
+        ipaddress.IPv4Address(V.global_usersm)
+
         V.global_usergtwyaddress = enter3.get()
+        ipaddress.IPv4Address(V.global_usergtwyaddress)
+
         V.global_uservrfname = enter4.get()
         root.destroy()
 

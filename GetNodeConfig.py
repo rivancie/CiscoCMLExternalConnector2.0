@@ -95,6 +95,7 @@ def get_node_config(token, url):
         GlobalVar.global_node_type = "XE"
         with open('csrtemp.cfg') as file:
             config = file.read()
+            node_info['configuration'] = remove_end_line(str(node_info['configuration']))
             temp_config = config.format(**env_dict)
             GV.global_node_config = node_info['configuration'] + temp_config
     elif "nxosv9" in node_type:
@@ -111,4 +112,3 @@ def get_node_config(token, url):
             GV.global_node_config = node_info['configuration'] + temp_config
     else:
         GlobalVar.global_node_type = "SKIP"
-

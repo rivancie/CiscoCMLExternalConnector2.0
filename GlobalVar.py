@@ -1,13 +1,13 @@
 # Module
 # Description: This module keeps track of variables passing through the modules rather than parameters per module
 #
-global_labid = ("TEST")
+global_labid = "TEST"
 global_lab_list = []
 global_lab_id_list = []
 global_nodeID_list = []
-global_title = ("test")
-global_nodeid = ("test")
-global_uservrfname = ("mgmt")
+global_title = "test"
+global_nodeid = "test"
+global_uservrfname = "mgmt"
 global_userstartaddress = ("10.16.4.1")
 global_usersm = ("255.255.255.0")
 global_usergtwyaddress = ("10.16.4.254")

@@ -1,11 +1,8 @@
 # Module
 # Description: This module does a lot of lifting.  Provides a basic user GUI for input
-#               then checks the the selected lab to see if its actively running.
+#               then checks the selected lab to see if it's actively running.
 
-import time
 import tkinter
-from idlelib import window
-from tkinter import Checkbutton
 import AddExternalNetwork
 import requests
 import GlobalVar
@@ -15,6 +12,7 @@ import tkinter.font as font
 import StopBox
 import UpdateTheLab
 import re
+import ipaddress
 import AddExternalConfigs
 g = GlobalVar
 
@@ -27,9 +25,10 @@ regex = '''^(25[0-5]|2[0-4][0-9]|[0-1]?[0-9][0-9]?)\.(
             25[0-5]|2[0-4][0-9]|[0-1]?[0-9][0-9]?)'''
 
 # Define a function for
-# validate an Ip addess
-def check(Ip):
+# validate an Ip address
 
+
+def check(Ip):
     # pass the regular expression
     # and the string in search() method
     if(re.search(regex, Ip)):
@@ -37,23 +36,12 @@ def check(Ip):
     else:
         g.global_valid = False
 
-# Beginning of tKinter user pop up box
+
 def input_box():
-    def myClick():
-        # This function verifies the user input items and  prints results in the gui
-        myLabel = Label(root, text="This is the starting point: " + g.global_userstartaddress)
-        myLabel.pack()
-        myLabel = Label(root, text="This is the SM: " + g.global_usersm)
-        myLabel.pack()
-        myLabel = Label(root, text="This is the GTWY: " + g.global_usergtwyaddress)
-        myLabel.pack()
-        myLabel = Label(root, text="This is the VRF name: " + g.global_uservrfname)
-        myLabel.pack()
-        myLabel = Label(root, text="This is the labID: " + g.global_labid)
-        myLabel.pack()
+    # Beginning of tKinter user pop up box
 
     def doneClick():
-        # This saves and closes the pop up box
+        # This saves and closes the pop-up box
         temp_it = clicked.get()
         temper = temp_it.split("ID:", 1)
         g.global_labid = temper[1]
@@ -89,12 +77,12 @@ def input_box():
                 5. Devices Supported: IOSv, IOSl2, CSR, ASR9k, XRv, NXOS & NXOS9000; nothing else at this time
                 6. You have already built your external network/Vlan to assign the addressing pool
             What it Does
-                1. User pop-up box for input of key variables -- NOTE this must be accurate
-                2. Select the correct lab -- the lab will be shutdown and wiped in order to update
-                3. The program will stop the lab if running, wipe all nodes, append the management configs per the templates
-                    and display the SecureCRT import statements
-                4. Each device type has a separate config template which implements in slot 9 of all devices - CAREFUL
-                5. Once complete the lab will remain off
+                1. User pop-up box for CML Credentials
+                2. Main dashboard will prompt user for lab selection
+                3. Optional Check boxes for user; layer in management devices and interfaces and/or add management 
+                   configurations -- both can be completed
+                4. Each device type has a separate config template which implements in slot 8 of all devices - CAREFUL
+                5. If the selected lab is running, user prompt for shutting down the lab to make the changes requested
                 6. Remote access to devices will be telnet at this point as RSA key pairs are not created in this program
                 7. (optional) Check the box if you want this script to automatically add the external management switch
                 8. (optional) Add the bridge name you want the script to assign to the cloud connector
@@ -126,18 +114,13 @@ def input_box():
     checkBox2 = tkinter.Checkbutton(root, text="Optional - Add Mgmt Configurations to the lab selected above", variable=checkvar2, onvalue=1, offvalue=0, command=checkedBox2)
     checkBox2.pack()
 
-
     button_font = font.Font(size=10, weight="bold")
-    myButton1 = Button(root, text="Confirm Changes", command=myClick)
-    myButton1.pack()
 
     myButton2 = Button(root, text="Execute", width=10, height= 5, command=doneClick)
     myButton2['font'] = button_font
     myButton2.pack(side="left")
 
-    #myButton3 = Button(root, text="QUIT", width=10, height= 5, command=root.destroy)
     myButton3 = Button(root, text="QUIT", width=10, height= 5, command=quitButton)
-
     myButton3['font'] = button_font
     myButton3.pack(side="right")
 
@@ -145,6 +128,7 @@ def input_box():
 
 def get_user_input(token, url, CML_USER, CML_PASS):
     input_box()
+
 
     # This section below gets the lab name from the user input
     token = 'Bearer' + ' ' + token

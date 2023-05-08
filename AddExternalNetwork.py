@@ -1,17 +1,12 @@
 # This module provides a popup for additional user input. 2 new devices will be added to the running lab.
 # The external cloud connector object and the management switch.  This also adds the management links to
 # all devices in the lab.
-import tkinter
 import GlobalVar
 import requests
 import json
 from tkinter import *
 import sys
-import tkinter.font as font
-import ast
 import UpdateNodeConfig
-import StopBox
-import time
 
 V = GlobalVar
 
@@ -80,6 +75,7 @@ def addManagement():
 
         else:
             print(f"Error: Unable to add device to CML. Status code: {response1.status_code}")
+            sys.exit("Program Stopped")
 
         #This section adds the mgmt switch and updates the config
         response2 = requests.post(full_url, headers=headers, data=json.dumps(switch_payload), verify=False)
@@ -104,6 +100,7 @@ def addManagement():
                 UpdateNodeConfig.update_node_config(V.global_token, V.global_CML_URL)
         else:
             print(f"Error: Unable to add device to CML. Status code: {response2.status_code}")
+            sys.exit("Program Stopped")
 
         #Create Interfaces on Mgmt Switch
         V.global_add_int_info['node'] = V.global_mgmtswitch_node['id']
