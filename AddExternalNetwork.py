@@ -123,19 +123,36 @@ def addManagement():
 
         #Create links to all devices
         for counter1 in range(int(GlobalVar.global_node_count)):
-            #Ensures the 8th port of the device is created
-            V.global_add_int_info['node'] = V.global_nodeID_list[counter1]
-            V.global_add_int_info['slot'] = 8
-            response5 = requests.post(addint_url, headers=headers, data=json.dumps(V.global_add_int_info), verify=False)
-            V.global_add_int_info['interfaces'] = json.loads(response5.content)
 
-            #Connects the current node to the mgmt switch
-            V.global_linkem['src_int'] = V.global_add_int_info['interfaces'][8]['id']
-            V.global_linkem['dst_int'] = V.global_mgmtswitch_node['interfaces'][counter1+1]['id']
-            response51 = requests.post(addlink_url, headers=headers, data=json.dumps(V.global_linkem), verify=False)
-            V.global_add_int_info = {"node": "test",
-                                     "slot": 0
-                                     }
+            # This section looks for the management tag and skips configuring this device
+            api_call = "/v0/labs/" + V.global_labid + "/nodes/" + V.global_nodeID_list[counter1] + "/tags"
+            full_url = V.global_CML_URL + api_call
+            print(full_url)
+            node_tag = requests.get(full_url, headers=headers, verify=False).json()
+            node_tag = str(node_tag)
+            node_type = "NULL"
+            if "MANAGEMENT" in node_tag:
+                node_type = "SKIP"
+            node_type = str(node_type)
+
+            print(counter1)
+            print(node_tag)
+            print(node_type)
+
+            if node_type != "SKIP":
+                #Ensures the 8th port of the device is created
+                V.global_add_int_info['node'] = V.global_nodeID_list[counter1]
+                V.global_add_int_info['slot'] = 8
+                response5 = requests.post(addint_url, headers=headers, data=json.dumps(V.global_add_int_info), verify=False)
+                V.global_add_int_info['interfaces'] = json.loads(response5.content)
+
+                #Connects the current node to the mgmt switch
+                V.global_linkem['src_int'] = V.global_add_int_info['interfaces'][8]['id']
+                V.global_linkem['dst_int'] = V.global_mgmtswitch_node['interfaces'][counter1+1]['id']
+                response51 = requests.post(addlink_url, headers=headers, data=json.dumps(V.global_linkem), verify=False)
+                V.global_add_int_info = {"node": "test",
+                                         "slot": 0
+                                         }
         print(f"{counter1+1} Mgmt connections made successfully")
         root.destroy()
 
